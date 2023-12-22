@@ -5,8 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using Dominio;
-using System.Net;
-using System.Security.Policy;
 
 namespace Negocio
 {
@@ -19,28 +17,56 @@ namespace Negocio
             SqlCommand comando = new SqlCommand();
             SqlDataReader lector;
 
-            conexion.ConnectionString= "server=.\\SQLEXPRESS; database=CATALOGO_DB; integrated security=true";
-            comando.CommandType = System.Data.CommandType.Text;
-            comando.CommandText = "select Codigo, Nombre, Descripcion, ImagenUrl, Precio from ARTICULOS";
-            comando.Connection = conexion;
-
-            conexion.Open();
-            lector = comando.ExecuteReader();
-
-            while (lector.Read())
+            try
             {
-                Articulo art = new Articulo();
-                art.Codigo = (string)lector["Codigo"];
-                art.Nombre = (string)lector["Nombre"];
-                art.Descripcion = (string)lector["Descripcion"];
-                art.Imagen = (string)lector["ImagenUrl"];
-                art.Precio = (decimal)lector["Precio"];
+                conexion.ConnectionString = ("server=.\\SQLEXPRESS; database=CATALOGO_DB; integrated security=TRUE");
+                comando.CommandType = System.Data.CommandType.Text;
+                comando.CommandText = ("select Codigo, Nombre, A.Descripcion, M.Descripcion Marca, C.Descripcion Tipo, ImagenUrl, Precio from ARTICULOS A, CATEGORIAS C, MARCAS M where A.IdMarca = M.Id AND A.IdCategoria = C.Id");
+                comando.Connection = conexion;
 
-                lista.Add(art);
+                conexion.Open();
+                lector = comando.ExecuteReader();
+                while (lector.Read())
+                {
+                    Articulo aux = new Articulo();
+                    aux.Codigo = (string)lector["Codigo"];
+                    aux.Nombre = (string)lector["Nombre"];
+                    aux.Descripcion = (string)lector["Descripcion"];
+                    aux.Marca.Descripcion = (string)lector["Marca"];
+                    aux.ImagenUrl = (string)lector["ImagenUrl"];
+                    aux.Precio = (decimal)lector["Precio"];
+                    aux.Tipo = new Categoria();
+                    aux.Tipo.Descripcion = (string)lector["Tipo"];
+
+                    lista.Add(aux);
+                }
+
+                return lista;
             }
-
-            conexion.Close();
-            return lista;
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                conexion.Close();
+            }
         }
+        public void agregar(Articulo nuevo)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("insert into ARTICULOS (Codigo, Nombre, Descripcion, IdMarca, IdCategoria, ImagenUrl, Precio) values ('"+nuevo.Codigo+"', '"+nuevo.Nombre+"', '"+nuevo.Descripcion+"', @IdMarca, @IdCategoria, '"+nuevo.ImagenUrl+"', "+nuevo.Precio+")");
+                datos.setearParametros("@IdMarca", nuevo.Marca.Id);
+                datos.setearParametros("@IdCategoria", nuevo.Tipo.Id);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
+        }    
     }
 }

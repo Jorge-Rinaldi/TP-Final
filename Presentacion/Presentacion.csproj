@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{101E6D9C-6CAE-463B-83E7-C949E5483FB6}</ProjectGuid>
+    <ProjectGuid>{BF7B9A7D-5948-4374-BF38-89595D6EAC05}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>Presentacion</RootNamespace>
     <AssemblyName>Presentacion</AssemblyName>
@@ -46,16 +46,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form2.cs">
+    <Compile Include="Alta Articulos.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form2.Designer.cs">
-      <DependentUpon>Form2.cs</DependentUpon>
+    <Compile Include="Alta Articulos.Designer.cs">
+      <DependentUpon>Alta Articulos.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form2.resx">
-      <DependentUpon>Form2.cs</DependentUpon>
+    <EmbeddedResource Include="Alta Articulos.resx">
+      <DependentUpon>Alta Articulos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -81,11 +90,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dominio\Dominio.csproj">
-      <Project>{8a41b660-1f6d-4ffb-985e-2b7473686845}</Project>
+      <Project>{f28c6cee-d04b-4b32-9e4c-88287659d090}</Project>
       <Name>Dominio</Name>
     </ProjectReference>
     <ProjectReference Include="..\Negocio\Negocio.csproj">
-      <Project>{bc958f84-5191-4b4b-80e0-7add2f1507bd}</Project>
+      <Project>{e7b6f73c-9bc2-405d-a17c-51bb4bd731ff}</Project>
       <Name>Negocio</Name>
     </ProjectReference>
   </ItemGroup>
