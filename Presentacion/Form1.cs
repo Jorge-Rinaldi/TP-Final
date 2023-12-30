@@ -14,10 +14,11 @@ namespace Presentacion
 {
     public partial class Form1 : Form
     {
-        private List<Articulo> listaNegocio;
+        private List<Articulo> listaArticulo;
         public Form1()
         {
             InitializeComponent();
+            Text = "Lista Articulos";
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -40,10 +41,11 @@ namespace Presentacion
             ArticuloNegocio negocio = new ArticuloNegocio();
             try
             {
-                listaNegocio = negocio.listar();
-                dgvArticulo.DataSource = listaNegocio;
-                cargarImagen(listaNegocio[0].ImagenUrl);
+                listaArticulo = negocio.listar();
+                dgvArticulo.DataSource = listaArticulo;
+                cargarImagen(listaArticulo[0].ImagenUrl);
                 dgvArticulo.Columns["ImagenUrl"].Visible = false;
+                dgvArticulo.Columns["Id"].Visible = false;
             }
             catch (Exception ex)
             {
@@ -54,8 +56,12 @@ namespace Presentacion
        
         private void dgvArticulo_SelectionChanged(object sender, EventArgs e)
         {
-            Articulo seleccionado = (Articulo)dgvArticulo.CurrentRow.DataBoundItem;
-            cargarImagen(seleccionado.ImagenUrl);
+            if (dgvArticulo.CurrentRow != null)
+            {
+                Articulo seleccionado = (Articulo)dgvArticulo.CurrentRow.DataBoundItem;
+                cargarImagen(seleccionado.ImagenUrl);
+            }
+           
         }
 
         private void btnAgregar_Click(object sender, EventArgs e)
@@ -68,18 +74,56 @@ namespace Presentacion
         private void btnEliminar_Click(object sender, EventArgs e)
         {
             AccesoDatos datos = new AccesoDatos();
+            Articulo seleccionado;
+            seleccionado = (Articulo)dgvArticulo.CurrentRow.DataBoundItem;
             try
             {
                 datos.setearConsulta("delete from ARTICULOS where Id = @Id");
+                datos.setearParametros("@Id", seleccionado.Id);
                 datos.ejecutarAccion();
-                Close();
+                MessageBox.Show("Eliminado Exitosamente");
+                cargar();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
             }
-            
+            finally { datos.cerrarConexion(); }
+        }
 
+        private void btnModificar_Click(object sender, EventArgs e)
+        {
+            Articulo seleccionado;
+            if(dgvArticulo.CurrentRow != null)
+            {
+                seleccionado = (Articulo)dgvArticulo.CurrentRow.DataBoundItem;
+                frmAltaArticulos modificar = new frmAltaArticulos(seleccionado);
+                modificar.ShowDialog();
+                cargar();
+            }
+            else
+            {
+                MessageBox.Show("Por favor seleccione un artículo");
+            }
+            
+        }
+
+        private void btnBuscar_Click(object sender, EventArgs e)
+        {
+            List<Articulo> listaFiltrada;
+            listaFiltrada = listaArticulo.FindAll(articulo => articulo.Codigo.ToLower().Contains(txtBuscar.Text.ToLower()) || articulo.Nombre.ToLower().Contains(txtBuscar.Text.ToLower())|| articulo.Descripcion.ToLower().Contains(txtBuscar.Text.ToLower()) || articulo.Marca.Descripcion.ToLower().Contains(txtBuscar.Text.ToLower()) || articulo.Tipo.Descripcion.ToLower().Contains(txtBuscar.Text.ToLower()));
+            dgvArticulo.DataSource = null;
+            dgvArticulo.DataSource = listaFiltrada;
+            dgvArticulo.Columns["ImagenUrl"].Visible = false;
+            dgvArticulo.Columns["Id"].Visible = false;
+        }
+
+        private void dgvArticulo_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            Articulo elegido;
+            elegido = (Articulo)dgvArticulo.CurrentRow.DataBoundItem;
+            Artículo_en_Destalle mostrar = new Artículo_en_Destalle(elegido);
+            mostrar.ShowDialog();
         }
     }
 }
